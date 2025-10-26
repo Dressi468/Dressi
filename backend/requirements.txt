@@ -1,0 +1,48 @@
+# Core Python tools
+wheel>=0.45.1
+setuptools>=80.9.0
+typing-extensions>=4.15.0
+virtualenv>=20.35.3
+virtualenvwrapper-win>=1.2.7
+
+# Django stack
+Django>=5.2.7
+djangorestframework>=3.16.1
+django-cors-headers>=4.9.0
+python-dotenv>=1.1.1
+whitenoise>=6.11.0
+gunicorn>=23.0.0
+djangorestframework_simplejwt>=5.5.1
+
+# Database clients - simplified for Render deployment
+pymongo>=4.15.3
+pymongo[srv]>=4.15.3
+pymongo[tls]>=4.15.3
+psycopg>=3.2.11
+psycopg2>=2.9.11
+dnspython>=2.8.0
+# Explicitly ensure TLS support
+pyOpenSSL>=23.2.0
+
+# Cloud / API / HTTP
+boto3>=1.40.57
+httpx>=0.28.1
+requests>=2.32.5
+
+# Google AI
+google-genai>=1.46.0
+google-generativeai>=0.8.5
+pydantic>=2.12.3
+tenacity>=9.1.2
+
+# Images / files
+pillow>=12.0.0
+openpyxl>=3.1.5
+opencv-python>=4.12.0.88
+
+# ML / Torch
+torch>=2.9.0
+torchvision>=0.24.0
+
+# Optional / utilities
+colorama>=0.4.6
