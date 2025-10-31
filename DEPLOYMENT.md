@@ -51,6 +51,7 @@ Before deploying, update your backend environment:
 - Set `DJANGO_ALLOWED_HOSTS` to include the backend domain.
 - Set `DJANGO_CSRF_TRUSTED_ORIGINS` and `DJANGO_CORS_ALLOWED_ORIGINS` to cover the HTTPS URLs of both backend and frontend.
 - Toggle `ENABLE_AI_GENERATION` (`False` disables Gemini background generation so only stored outfits show; set to `True` for devs experimenting with new looks).
+- Set `TOTAL_IMAGES` and `MAX_GENERATED_IMAGES` to the number of AI outfits you want to surface (defaults to `1` to keep latency low and avoid overloading the service).
 - Provide Postgres connection details (`DB_NAME`, `DB_USER`, `DB_PASSWORD`, `DB_HOST`, `DB_PORT`) if you use a managed database.
 - Rotate and store all secrets (Cloudflare, MongoDB, Gemini, Weather API, etc.) in your hosting provider.
 
@@ -71,6 +72,7 @@ python manage.py collectstatic --noinput
    - **Root Directory**: `backend`
    - **Build Command**: `pip install -r requirements.txt && python manage.py collectstatic --noinput`
    - **Start Command**: `gunicorn myproject.wsgi:application --bind 0.0.0.0:8000`
+   - Gunicorn automatically uses `backend/gunicorn.conf.py` (2 workers × 2 threads by default). Override via environment variables (`GUNICORN_WORKERS`, `GUNICORN_THREADS`, etc.) if needed.
 5. Add the environment variables from `.env.example` plus production secrets (generate a fresh `DJANGO_SECRET_KEY`).
 6. Deploy and note the backend URL (currently `https://dressi-test2.onrender.com`).
 

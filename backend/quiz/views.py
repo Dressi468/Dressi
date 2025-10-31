@@ -66,8 +66,18 @@ def _env_flag(name: str, default: bool = False) -> bool:
         return default
     return value.strip().lower() in {"1", "true", "yes", "on"}
 
+def _env_int(name: str, default: int) -> int:
+    raw = os.getenv(name)
+    if raw is None:
+        return default
+    try:
+        return int(str(raw).strip())
+    except (TypeError, ValueError):
+        return default
+
 genai_client = genai.Client(api_key=GENAI_API_KEY)
-TOTAL_IMAGES = 10
+TOTAL_IMAGES = _env_int("TOTAL_IMAGES", 1)
+MAX_GENERATED_IMAGES = _env_int("MAX_GENERATED_IMAGES", 1)
 ADMIN_EMAIL = (os.getenv("ADMIN_EMAIL") or "").strip().lower()
 if not ADMIN_EMAIL:
     raise RuntimeError("ADMIN_EMAIL environment variable must be set.")
@@ -1014,10 +1024,16 @@ def get_wardrobe(request):
 
     return JsonResponse({"wardrobe": wardrobe})
 
-def generate(base_tags, image_count_per_weather=3, user_id=None):
+def generate(base_tags, total_images=1, user_id=None):
     if not ENABLE_AI_GENERATION:
         print("[DEBUG] AI generation disabled via ENABLE_AI_GENERATION")
         return
+
+    try:
+        total_images = int(total_images)
+    except (TypeError, ValueError):
+        total_images = 1
+    total_images = max(1, min(total_images, MAX_GENERATED_IMAGES))
 
     weather_types = ["hot", "cold"]
 
@@ -1035,63 +1051,65 @@ def generate(base_tags, image_count_per_weather=3, user_id=None):
 
     time.sleep(1)
 
-    for weather in weather_types:
-        for i in range(image_count_per_weather):
-            try:
-                prompt_text = (
-                    f"{query} women's fashion single outfit flatlay, "
-                    f"high quality, white background, {weather} style"
-                )
-                print(f"[DEBUG] Generating {weather} image for query '{query}', attempt {i+1}")
-                print(f"[DEBUG] Prompt text: {prompt_text}")
+    for image_index in range(total_images):
+        weather = weather_types[image_index % len(weather_types)]
+        try:
+            prompt_text = (
+                f"{query} women's fashion single outfit flatlay, "
+                f"high quality, white background, {weather} style"
+            )
+            print(f"[DEBUG] Generating {weather} image for query '{query}', attempt {image_index + 1}")
+            print(f"[DEBUG] Prompt text: {prompt_text}")
 
-                response = genai_client.models.generate_content(
-                    model='gemini-2.5-flash-image-preview',
-                    contents=[prompt_text],
-                )
+            response = genai_client.models.generate_content(
+                model='gemini-2.5-flash-image-preview',
+                contents=[prompt_text],
+            )
 
-                # Loop through all parts to find inline images
-                for part in response.candidates[0].content.parts:
-                    if getattr(part, 'inline_data', None):
-                        image_bytes = part.inline_data.data
-                        random_suffix = ''.join(random.choices(string.ascii_lowercase + string.digits, k=6))
-                        safe_keywords = '___'.join(normalized_tags) or "outfit"
-                        storage_filename = f"{safe_keywords}___{weather}___{random_suffix}.png"
-                        search_filename = f"GENERATED_{safe_keywords}___{weather}___{random_suffix}.png"
+            # Loop through all parts to find inline images
+            for part in response.candidates[0].content.parts:
+                if getattr(part, 'inline_data', None):
+                    image_bytes = part.inline_data.data
+                    random_suffix = ''.join(random.choices(string.ascii_lowercase + string.digits, k=6))
+                    safe_keywords = '___'.join(normalized_tags) or "outfit"
+                    storage_filename = f"{safe_keywords}___{weather}___{random_suffix}.png"
+                    search_filename = f"GENERATED_{safe_keywords}___{weather}___{random_suffix}.png"
 
-                        # Upload to R2
-                        r2_url = upload_to_r2(storage_filename, image_bytes)
-                        if r2_url:
-                            print(f"[DEBUG] Uploaded image to R2: {r2_url}")
+                    # Upload to R2
+                    r2_url = upload_to_r2(storage_filename, image_bytes)
+                    if r2_url:
+                        print(f"[DEBUG] Uploaded image to R2: {r2_url}")
 
-                            # Save metadata in DB with the selected quiz tags
-                            save_image_metadata(
-                                storage_filename,
-                                normalized_tags,
-                                r2_url,
-                                user_id=user_id
-                            )
-                            print(f"[DEBUG] Saved image metadata to DB: {storage_filename}")
+                        # Save metadata in DB with the selected quiz tags
+                        save_image_metadata(
+                            storage_filename,
+                            normalized_tags,
+                            r2_url,
+                            user_id=user_id
+                        )
+                        print(f"[DEBUG] Saved image metadata to DB: {storage_filename}")
 
-                            # Mark as AI-generated
-                            collection.update_one(
-                                {"filename": storage_filename},
-                                {"$set": {"search_filename": search_filename, "is_ai": True}}
-                            )
-                            print(f"[DEBUG] Marked image as AI-generated")
+                        # Mark as AI-generated
+                        collection.update_one(
+                            {"filename": storage_filename},
+                            {"$set": {"search_filename": search_filename, "is_ai": True}}
+                        )
+                        print(f"[DEBUG] Marked image as AI-generated")
 
-                            # Save to user's wardrobe if logged in
-                            if user_id:
-                                wardrobe_collection.insert_one({
-                                    "user_id": user_id,
-                                    "filename": storage_filename,
-                                    "image_url": r2_url,
-                                    "tags": normalized_tags,
-                                    "saved_at": datetime.utcnow()
-                                })
+                        # Save to user's wardrobe if logged in
+                        if user_id:
+                            wardrobe_collection.insert_one({
+                                "user_id": user_id,
+                                "filename": storage_filename,
+                                "image_url": r2_url,
+                                "tags": normalized_tags,
+                                "saved_at": datetime.utcnow()
+                            })
 
-            except Exception as e:
-                print(f"[DEBUG] Error generating {weather} image for '{query}': {e}")
+                    break
+
+        except Exception as e:
+            print(f"[DEBUG] Error generating {weather} image for '{query}': {e}")
 
 # --- Get AI-generated Images ---
 @api_view(["POST"])
@@ -1154,12 +1172,12 @@ def generate_outfits(request):
     body_shapes = _collect_values(data, "bodyShapes", "bodyShape")
     occasions = _collect_values(data, "occasions", "occasion")
 
-    image_count = data.get("image_count", 4)
+    image_count = data.get("image_count", MAX_GENERATED_IMAGES)
     try:
         image_count = int(image_count)
     except (TypeError, ValueError):
-        image_count = 4
-    image_count = max(1, min(image_count, 8))
+        image_count = MAX_GENERATED_IMAGES
+    image_count = max(1, min(image_count, MAX_GENERATED_IMAGES))
 
     primary_style = (styles + ["casual"])[0]
     primary_body_shape = (body_shapes + ["womenswear"])[0]
@@ -1502,7 +1520,7 @@ def recommend(request):
     if base_tags and ENABLE_AI_GENERATION:
         threading.Thread(
             target=generate,
-            args=(base_tags, min(image_count, 2), user_id),
+            args=(base_tags, min(image_count, MAX_GENERATED_IMAGES), user_id),
             daemon=True
         ).start()
 
