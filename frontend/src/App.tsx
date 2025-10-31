@@ -14,6 +14,7 @@ import LoginPage from "./components/LoginPage";
 import SignupPage from "./components/SignupPage";
 import ProfilePage from "./components/ProfilePage";
 import WardrobePage from "./components/WardrobePage";
+import NotFoundPage from "./components/NotFoundPage";
 
 export default function App() {
   const [showModal, setShowModal] = useState(false);
@@ -50,6 +51,7 @@ export default function App() {
             <Route path="/signup" element={<SignupPage />} />
             <Route path="/profile" element={<ProfilePage />} />
             <Route path="/admin" element={<AdminPage />} />
+            <Route path="*" element={<NotFoundPage />} />
           </Routes>
         </main>
       </div>
