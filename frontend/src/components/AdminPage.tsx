@@ -299,9 +299,11 @@ export default function AdminPage() {
   const [instantOutfitsTotal, setInstantOutfitsTotal] = useState(0);
   const USERS_PAGE_SIZE = TABLE_PAGE_SIZE;
   const [usersPage, setUsersPage] = useState(1);
+  const [usersRefreshToken, setUsersRefreshToken] = useState(0);
   const [usersTotal, setUsersTotal] = useState(0);
   const EARLY_PAGE_SIZE = TABLE_PAGE_SIZE;
   const [earlyPage, setEarlyPage] = useState(1);
+  const [earlyRefreshToken, setEarlyRefreshToken] = useState(0);
   const [earlyTotal, setEarlyTotal] = useState(0);
 
   const isAdmin = user?.isAdmin === true;
@@ -435,7 +437,7 @@ export default function AdminPage() {
 
     fetchEntries();
     return () => controller.abort();
-  }, [earlyPage, isAdmin]);
+  }, [earlyPage, earlyRefreshToken, isAdmin]);
 
   const handleSearchImages = async () => {
     const query = imageSearch.trim();
@@ -540,7 +542,7 @@ export default function AdminPage() {
 
     fetchUsers();
     return () => controller.abort();
-  }, [isAdmin, usersPage]);
+  }, [isAdmin, usersPage, usersRefreshToken]);
 
   const handleDeleteImage = async (name: string) => {
     if (!confirm(`Delete image "${name}"? This cannot be undone.`)) return;
@@ -615,6 +617,7 @@ export default function AdminPage() {
           return current;
         });
       }, 0);
+      setEarlyRefreshToken((token) => token + 1);
     } catch (err) {
       alert(err instanceof Error ? err.message : "Error deleting registration");
     }
@@ -666,6 +669,7 @@ export default function AdminPage() {
           return current;
         });
       }, 0);
+      setUsersRefreshToken((token) => token + 1);
     } catch (err) {
       alert(err instanceof Error ? err.message : "Error deleting user");
     }
