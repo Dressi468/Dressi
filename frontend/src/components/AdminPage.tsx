@@ -76,7 +76,7 @@ const AdminUploadModal = ({ isOpen, onClose, token, onUploadSuccess }: AdminUplo
     formData.append("tags", tags);
 
     try {
-      const res = await fetch("/api/admin/images/upload/", {
+      const res = await fetch(apiUrl("/api/admin/images/upload/"), {
         method: "POST",
         headers: token ? { Authorization: `Bearer ${token}` } : {},
         body: formData,
@@ -206,7 +206,7 @@ const AdminInstantUploadModal = ({ isOpen, onClose, token, onUploadSuccess }: Ad
     formData.append("tag", tag);
 
     try {
-      const res = await fetch("/api/admin/instantoutfit/upload/", {
+      const res = await fetch(apiUrl("/api/admin/instantoutfit/upload/"), {
         method: "POST",
         headers: token ? { Authorization: `Bearer ${token}` } : {},
         body: formData,
