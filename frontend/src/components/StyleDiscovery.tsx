@@ -271,12 +271,24 @@ export default function StyleDiscovery() {
         Array.isArray(data.outfits) ? data.outfits : []
       );
       const baseOutfits = dedupedOutfits.slice(0, 10);
+      const parseCount = (value: unknown) => {
+        const parsed = Number(value);
+        return Number.isFinite(parsed) && parsed >= 0
+          ? Math.floor(parsed)
+          : null;
+      };
+      const requestedCount =
+        parseCount(data?.requestedCount) ?? requestBody.image_count;
+      const deliveredCount =
+        parseCount(data?.deliveredCount) ?? baseOutfits.length;
       navigate("/outfit-swipe", {
         state: {
           outfits: baseOutfits,
           answers,
           weather: weatherPayload,
           aiEnabled,
+          requestedCount,
+          deliveredCount,
         },
       });
 

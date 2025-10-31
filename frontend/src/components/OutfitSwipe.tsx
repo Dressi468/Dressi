@@ -21,7 +21,7 @@ type OutfitCard = Outfit & {
   id?: string;
 };
 
-const BASE_OUTFIT_COUNT = 10;
+const REQUESTED_OUTFIT_LIMIT = 10;
 const AI_BONUS_COUNT = 4;
 
 function getOutfitKey(outfit: { image?: unknown; name?: unknown } | null) {
@@ -56,17 +56,6 @@ function dedupeOutfits(outfits: Outfit[]): Outfit[] {
     seen.add(key);
     return true;
   });
-}
-
-function getPlaceholders(count: number = 0): OutfitCard[] {
-  return Array.from({ length: count }, (_, i) => ({
-    name: "Generating outfit...",
-    image: "/spinner.gif",
-    tags: [],
-    source_url: null,
-    isPlaceholder: true,
-    id: "placeholder-" + i,
-  }));
 }
 
 function getViewportHeight() {
@@ -111,14 +100,11 @@ export default function OutfitSwipe() {
   const aiEnabled = Boolean(location.state?.aiEnabled);
   const initialOutfits = dedupeOutfits(
     (location.state?.outfits ?? []) as Outfit[]
-  ).slice(0, BASE_OUTFIT_COUNT);
-  const missingCoreOutfits = Math.max(
-    BASE_OUTFIT_COUNT - initialOutfits.length,
-    0
-  );
+  ).slice(0, REQUESTED_OUTFIT_LIMIT);
+  const baseOutfitCount = initialOutfits.length;
+  const maxOutfitCountWithAI = baseOutfitCount + AI_BONUS_COUNT;
   const [outfits, setOutfits] = useState<OutfitCard[]>(() => [
     ...initialOutfits,
-    ...getPlaceholders(missingCoreOutfits),
   ]);
   const [index, setIndex] = useState(0);
   const [liked, setLiked] = useState<Outfit[]>([]);
@@ -165,7 +151,7 @@ export default function OutfitSwipe() {
       }
 
       setOutfits((prev) => {
-        const maxOutfitCount = BASE_OUTFIT_COUNT + AI_BONUS_COUNT;
+        const maxOutfitCount = maxOutfitCountWithAI;
         const next = [...prev];
         const existingKeys = new Set(
           next
@@ -186,21 +172,10 @@ export default function OutfitSwipe() {
           existingKeys.add(key);
 
           const card: OutfitCard = { ...item };
-          const placeholderIndex = next.findIndex(
-            (entry) => entry.isPlaceholder
-          );
-          if (placeholderIndex !== -1) {
-            next[placeholderIndex] = card;
+          if (next.length < maxOutfitCount) {
+            next.push(card);
             updated = true;
-            return;
           }
-
-          if (next.length >= maxOutfitCount) {
-            return;
-          }
-
-          next.push(card);
-          updated = true;
         });
 
         return updated ? next : prev;

@@ -1365,6 +1365,9 @@ def recommend(request):
     fetch_with_stratified_sampling()
 
     random.shuffle(response_images)
+    delivered_images = response_images[:image_count]
+    delivered_count = len(delivered_images)
+    requested_count = image_count
 
     if base_tags and ENABLE_AI_GENERATION:
         threading.Thread(
@@ -1374,7 +1377,9 @@ def recommend(request):
         ).start()
 
     return JsonResponse({
-        "outfits": response_images[:image_count],
+        "outfits": delivered_images,
+        "requestedCount": requested_count,
+        "deliveredCount": delivered_count,
         "uniqueExhausted": unique_exhausted,
         "weather": weather_info,
         "ai": {
