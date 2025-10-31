@@ -72,6 +72,7 @@ ADMIN_EMAIL = (os.getenv("ADMIN_EMAIL") or "").strip().lower()
 if not ADMIN_EMAIL:
     raise RuntimeError("ADMIN_EMAIL environment variable must be set.")
 MAX_EARLY_ACCESS_PAGE_SIZE = 200
+MAX_USERS_PAGE_SIZE = 200
 ENABLE_AI_GENERATION = _env_flag("ENABLE_AI_GENERATION", False)
 
 SECURITY_QUESTIONS = {
@@ -672,9 +673,51 @@ def list_users(request):
     if request.method != "GET":
         return JsonResponse({"error": "GET required"}, status=405)
 
+    permission_error = ensure_admin(request)
+    if permission_error:
+        return permission_error
+
     try:
-        users = list(users_collection.find({}, {"_id": 0}))
-        return JsonResponse({"items": users, "total": len(users)}, safe=False)
+        page = int(request.GET.get("page", 1))
+    except (TypeError, ValueError):
+        page = 1
+    page = max(page, 1)
+
+    try:
+        page_size = int(request.GET.get("page_size", 10))
+    except (TypeError, ValueError):
+        page_size = 10
+    page_size = max(1, min(page_size, MAX_USERS_PAGE_SIZE))
+
+    try:
+        total = users_collection.count_documents({})
+        skip = (page - 1) * page_size
+
+        cursor = (
+            users_collection.find({}, {"_id": 0})
+            .sort("created_at", -1)
+            .skip(skip)
+            .limit(page_size)
+        )
+
+        items = []
+        for doc in cursor:
+            item = dict(doc)
+            created_at = item.get("created_at")
+            if isinstance(created_at, datetime):
+                item["created_at"] = created_at.isoformat()
+            if "role" not in item or not item["role"]:
+                item["role"] = "User"
+            items.append(item)
+
+        return JsonResponse(
+            {
+                "items": items,
+                "page": page,
+                "page_size": page_size,
+                "total": total,
+            }
+        )
     except Exception as e:
         return JsonResponse({"error": str(e)}, status=500)
 
@@ -683,9 +726,54 @@ def delete_user(request):
     if request.method != "POST":
         return JsonResponse({"error": "POST required"}, status=405)
 
+    permission_error = ensure_admin(request)
+    if permission_error:
+        return permission_error
+
     try:
-        data = json.loads(request.body)
-        email = data.get("email")
+        data = json.loads(request.body or "{}")
+    except json.JSONDecodeError:
+        return JsonResponse({"error": "Invalid JSON payload"}, status=400)
+
+    email = data.get("email")
+    if isinstance(email, str):
+        email = email.strip()
+
+    if not email:
+        return JsonResponse({"error": "Email required"}, status=400)
+
+    normalized_email = email.lower()
+    if normalized_email == ADMIN_EMAIL:
+        return JsonResponse(
+            {"error": "The primary admin account cannot be deleted."},
+            status=400,
+        )
+
+    delete_filter = {
+        "$or": [
+            {"email": email},
+            {"email": normalized_email},
+            {"username": email},
+            {"username": normalized_email},
+        ]
+    }
+
+    try:
+        result = users_collection.delete_one(delete_filter)
+        if result.deleted_count == 0:
+            return JsonResponse({"error": "User not found"}, status=404)
+
+        early_access_collection.delete_many(
+            {"email": {"$in": [email, normalized_email]}}
+        )
+
+        wardrobe_collection.delete_many(
+            {"email": {"$in": [email, normalized_email]}}
+        )
+
+        return JsonResponse({"success": True})
+    except Exception as e:
+        return JsonResponse({"error": str(e)}, status=500)
         if not email:
             return JsonResponse({"error": "Email required"}, status=400)
 
@@ -693,6 +781,47 @@ def delete_user(request):
         result = users_collection.delete_one({"email": email})
         if result.deleted_count == 0:
             return JsonResponse({"error": "User not found"}, status=404)
+
+        return JsonResponse({"success": True})
+    except Exception as e:
+        return JsonResponse({"error": str(e)}, status=500)
+
+@csrf_exempt
+def delete_early_access(request):
+    if request.method != "POST":
+        return JsonResponse({"error": "POST required"}, status=405)
+
+    permission_error = ensure_admin(request)
+    if permission_error:
+        return permission_error
+
+    try:
+        data = json.loads(request.body or "{}")
+    except json.JSONDecodeError:
+        return JsonResponse({"error": "Invalid JSON payload"}, status=400)
+
+    entry_id = data.get("id")
+    email = data.get("email")
+    delete_filter = {}
+
+    if entry_id:
+        try:
+            delete_filter["_id"] = ObjectId(str(entry_id))
+        except (TypeError, ValueError):
+            return JsonResponse({"error": "Invalid entry id"}, status=400)
+
+    if email and isinstance(email, str):
+        email = email.strip()
+        if email:
+            delete_filter["email"] = email
+
+    if not delete_filter:
+        return JsonResponse({"error": "id or email required"}, status=400)
+
+    try:
+        result = early_access_collection.delete_one(delete_filter)
+        if result.deleted_count == 0:
+            return JsonResponse({"error": "Registration not found"}, status=404)
 
         return JsonResponse({"success": True})
     except Exception as e:

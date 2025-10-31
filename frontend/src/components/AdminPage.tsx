@@ -294,13 +294,16 @@ export default function AdminPage() {
   const [instantOutfitSearch, setInstantOutfitSearch] = useState("");
   const [isInstantModalOpen, setInstantModalOpen] = useState(false);
   const INSTANT_OUTFITS_PAGE_SIZE = 10;
+  const TABLE_PAGE_SIZE = 5;
   const [instantOutfitsPage, setInstantOutfitsPage] = useState(1);
   const [instantOutfitsTotal, setInstantOutfitsTotal] = useState(0);
-  const USERS_PAGE_SIZE = 5;
+  const USERS_PAGE_SIZE = TABLE_PAGE_SIZE;
   const [usersPage, setUsersPage] = useState(1);
+  const [usersRefreshToken, setUsersRefreshToken] = useState(0);
   const [usersTotal, setUsersTotal] = useState(0);
-  const EARLY_PAGE_SIZE = 10;
+  const EARLY_PAGE_SIZE = TABLE_PAGE_SIZE;
   const [earlyPage, setEarlyPage] = useState(1);
+  const [earlyRefreshToken, setEarlyRefreshToken] = useState(0);
   const [earlyTotal, setEarlyTotal] = useState(0);
 
   const isAdmin = user?.isAdmin === true;
@@ -308,14 +311,14 @@ export default function AdminPage() {
   const earlySummary = useMemo(() => {
     if (!entries.length) return "No registrations found.";
     const start = (earlyPage - 1) * EARLY_PAGE_SIZE + 1;
-    const end = start + entries.length - 1;
+    const end = Math.min(start + entries.length - 1, earlyTotal);
     return `Showing ${start} to ${end} of ${earlyTotal}`;
   }, [entries.length, earlyPage, earlyTotal]);
 
   const usersSummary = useMemo(() => {
     if (!users.length) return "No users found.";
     const start = (usersPage - 1) * USERS_PAGE_SIZE + 1;
-    const end = start + users.length - 1;
+    const end = Math.min(start + users.length - 1, usersTotal);
     return `Showing ${start} to ${end} of ${usersTotal}`;
   }, [users.length, usersPage, usersTotal]);
 
@@ -434,7 +437,7 @@ export default function AdminPage() {
 
     fetchEntries();
     return () => controller.abort();
-  }, [earlyPage, isAdmin]);
+  }, [earlyPage, earlyRefreshToken, isAdmin]);
 
   const handleSearchImages = async () => {
     const query = imageSearch.trim();
@@ -539,7 +542,7 @@ export default function AdminPage() {
 
     fetchUsers();
     return () => controller.abort();
-  }, [isAdmin, usersPage]);
+  }, [isAdmin, usersPage, usersRefreshToken]);
 
   const handleDeleteImage = async (name: string) => {
     if (!confirm(`Delete image "${name}"? This cannot be undone.`)) return;
@@ -572,8 +575,66 @@ export default function AdminPage() {
     }
   };
 
-  const handleDeleteUser = async (email?: string) => {
-    if (!email || !confirm(`Delete user ${email}?`)) return;
+  const handleDeleteEarlyAccess = async (entry: EarlyAccessEntry) => {
+    const targetEmail = entry.email?.trim();
+    const identifier = entry.id || targetEmail;
+    if (!identifier) {
+      alert("Unable to delete this registration. Missing identifier.");
+      return;
+    }
+
+    if (!confirm(`Delete early-access registration ${identifier}?`)) return;
+
+    try {
+      const response = await fetch(apiUrl(`/api/early_access/delete/`), {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          ...buildAuthHeaders(user?.token),
+        },
+        body: JSON.stringify({ id: entry.id, email: targetEmail }),
+      });
+
+      if (!response.ok) {
+        let message = "Failed to delete registration";
+        try {
+          const payload = await response.json();
+          message = payload?.error || payload?.detail || message;
+        } catch {
+          // ignore parse errors
+        }
+        throw new Error(message);
+      }
+
+      setEntries((prev) => prev.filter((item) => item.id !== entry.id));
+      setEarlyTotal((prev) => Math.max(prev - 1, 0));
+
+      setTimeout(() => {
+        setEntries((current) => {
+          if (current.length === 0 && earlyPage > 1) {
+            setEarlyPage((p) => Math.max(1, p - 1));
+          }
+          return current;
+        });
+      }, 0);
+      setEarlyRefreshToken((token) => token + 1);
+    } catch (err) {
+      alert(err instanceof Error ? err.message : "Error deleting registration");
+    }
+  };
+
+  const handleDeleteUser = async (identifier?: string) => {
+    const target = identifier?.trim();
+    if (!target) return;
+
+    const normalizedTarget = target.toLowerCase();
+    const normalizedAdminEmail = user?.email ? user.email.trim().toLowerCase() : undefined;
+    if (normalizedAdminEmail && normalizedTarget === normalizedAdminEmail) {
+      alert("You cannot delete the account you are currently signed in with.");
+      return;
+    }
+
+    if (!confirm(`Delete user ${target}?`)) return;
 
     try {
       const response = await fetch(apiUrl(`/api/users/delete/`), {
@@ -582,12 +643,33 @@ export default function AdminPage() {
           "Content-Type": "application/json",
           ...buildAuthHeaders(user?.token),
         },
-        body: JSON.stringify({ email }),
+        body: JSON.stringify({ email: target }),
       });
 
-      if (!response.ok) throw new Error("Failed to delete user");
+      if (!response.ok) {
+        let message = "Failed to delete user";
+        try {
+          const payload = await response.json();
+          message = payload?.error || payload?.detail || message;
+        } catch {
+          // ignore JSON parsing errors
+        }
+        throw new Error(message);
+      }
 
-      setUsers((prev) => prev.filter((u) => u.email !== email));
+      setUsers((prev) => prev.filter((u) => u.email !== target && u.username !== target));
+      setUsersTotal((prev) => Math.max(prev - 1, 0));
+
+      // If the current page becomes empty after deletion, go back a page (unless already on first)
+      setTimeout(() => {
+        setUsers((current) => {
+          if (current.length === 0 && usersPage > 1) {
+            setUsersPage((p) => Math.max(1, p - 1));
+          }
+          return current;
+        });
+      }, 0);
+      setUsersRefreshToken((token) => token + 1);
     } catch (err) {
       alert(err instanceof Error ? err.message : "Error deleting user");
     }
@@ -791,7 +873,7 @@ export default function AdminPage() {
                         </td>
                         <td className="px-6 py-4">
                           <button
-                            onClick={() => handleDeleteUser(entry.email)}
+                            onClick={() => handleDeleteEarlyAccess(entry)}
                             className="rounded-full border border-rose-400/50 px-3 py-1 text-sm text-rose-300 hover:bg-rose-400/20 transition flex items-center gap-1"
                           >
                             <Trash2 className="h-4 w-4" /> Delete
@@ -892,22 +974,50 @@ export default function AdminPage() {
                       </td>
                     </tr>
                   ) : (
-                    users.map((u, i) => (
-                      <tr key={i} className="hover:bg-white/5">
-                        <td className="px-6 py-4 font-medium">{u.username || "--"}</td>
-                        <td className="px-6 py-4">{u.email || "--"}</td>
-                        <td className="px-6 py-4 text-white/70">{u.role || "User"}</td>
-                        <td className="px-6 py-4 text-white/70">{formatDate(u.created_at)}</td>
-                        <td className="px-6 py-4">
-                          <button
-                            onClick={() => handleDeleteUser(u.email)}
-                            className="rounded-full border border-rose-400/50 px-3 py-1 text-sm text-rose-300 hover:bg-rose-400/20 transition"
-                          >
-                            <Trash2 className="inline h-4 w-4 mr-1" /> Delete
-                          </button>
-                        </td>
-                      </tr>
-                    ))
+                    users.map((u, i) => {
+                      const entryEmail = u.email?.trim();
+                      const normalizedEntryEmail = entryEmail?.toLowerCase();
+                      const normalizedAdminEmail = user?.email ? user.email.trim().toLowerCase() : undefined;
+                      const isSelf = Boolean(
+                        normalizedEntryEmail &&
+                          normalizedAdminEmail &&
+                          normalizedEntryEmail === normalizedAdminEmail,
+                      );
+
+                      return (
+                        <tr key={i} className="hover:bg-white/5">
+                          <td className="px-6 py-4 font-medium">{u.username || "--"}</td>
+                          <td className="px-6 py-4">{entryEmail || "--"}</td>
+                          <td className="px-6 py-4 text-white/70">{u.role || "User"}</td>
+                          <td className="px-6 py-4 text-white/70">{formatDate(u.created_at)}</td>
+                          <td className="px-6 py-4">
+                            <button
+                              type="button"
+                              onClick={() => handleDeleteUser(u.email)}
+                              disabled={isSelf}
+                              title={
+                                isSelf ? "You cannot delete the account you are signed in with." : undefined
+                              }
+                              className={`rounded-full px-3 py-1 text-sm transition ${
+                                isSelf
+                                  ? "border border-white/20 text-white/60 cursor-not-allowed"
+                                  : "border border-rose-400/50 text-rose-300 hover:bg-rose-400/20"
+                              }`}
+                            >
+                              {isSelf ? (
+                                <>
+                                  <ShieldAlert className="inline h-4 w-4 mr-1" /> Protected
+                                </>
+                              ) : (
+                                <>
+                                  <Trash2 className="inline h-4 w-4 mr-1" /> Delete
+                                </>
+                              )}
+                            </button>
+                          </td>
+                        </tr>
+                      );
+                    })
                   )}
                 </tbody>
               </table>
