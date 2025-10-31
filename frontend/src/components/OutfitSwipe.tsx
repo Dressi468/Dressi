@@ -81,7 +81,7 @@ function SkeletonCard() {
   return (
     <div className="relative h-full w-full">
       <div className="skeleton-surface absolute inset-0" />
-      <div className="absolute inset-x-0 bottom-0 h-1/2 bg-gradient-to-t from-[#0d111a] via-[#0d111a]/70 to-transparent" />
+      <div className="absolute inset-x-0 bottom-0 h-1/2 bg-linear-to-t from-[#0d111a] via-[#0d111a]/70 to-transparent" />
       <div className="relative z-10 flex h-full flex-col justify-end gap-4 px-6 pb-6">
         <div className="skeleton-line h-4 w-3/5 rounded-md" />
         <div className="flex gap-2">

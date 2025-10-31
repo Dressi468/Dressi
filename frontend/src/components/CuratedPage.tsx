@@ -51,7 +51,7 @@ function SkeletonCuratedCard() {
         <div className="absolute top-4 right-4">
           <div className="skeleton-chip h-9 w-9 rounded-full opacity-80" />
         </div>
-        <div className="absolute inset-x-0 bottom-0 h-24 bg-gradient-to-t from-[#181c24] via-[#181c24]/80 to-transparent" />
+        <div className="absolute inset-x-0 bottom-0 h-24 bg-linear-to-t from-[#181c24] via-[#181c24]/80 to-transparent" />
       </div>
       <div className="flex flex-col gap-4 p-5">
         <div className="flex gap-2">
@@ -73,7 +73,7 @@ function SkeletonOverlay() {
         <div className="absolute top-4 right-4">
           <div className="skeleton-chip h-9 w-9 rounded-full opacity-80" />
         </div>
-        <div className="absolute inset-x-0 bottom-0 h-24 bg-gradient-to-t from-[#181c24] via-[#181c24]/80 to-transparent" />
+        <div className="absolute inset-x-0 bottom-0 h-24 bg-linear-to-t from-[#181c24] via-[#181c24]/80 to-transparent" />
       </div>
       <div className="flex flex-col gap-4 p-5">
         <div className="flex gap-2">

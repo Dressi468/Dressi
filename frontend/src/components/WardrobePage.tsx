@@ -166,7 +166,7 @@ export default function WardrobePage() {
           </div>
         </header>
 
-        <div className="rounded-[32px] border border-white/10 bg-black/30 p-6 backdrop-blur-xl">
+        <div className="rounded-4xl border border-white/10 bg-black/30 p-6 backdrop-blur-xl">
           {loading ? (
             <div className="flex flex-col items-center justify-center gap-4 py-16 text-white/70">
               <div className="h-10 w-10 animate-spin rounded-full border-4 border-white/20 border-t-white/70" />

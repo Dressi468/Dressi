@@ -12,7 +12,7 @@ export default function CallToActionSection() {
       whileInView={{ opacity: 1, y: 0 }}
       viewport={{ once: true, amount: 0.3 }}
       transition={{ duration: 0.7, ease: "easeOut" }}
-      className="bg-gradient-to-b from-white via-pink-50 to-white py-16 sm:py-24"
+      className="bg-linear-to-b from-white via-pink-50 to-white py-16 sm:py-24"
     >
       <EarlyAccessModal open={modalOpen} onClose={() => setModalOpen(false)} />
       <div className="mx-auto max-w-2xl text-center px-4">

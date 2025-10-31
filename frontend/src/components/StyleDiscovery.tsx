@@ -96,7 +96,7 @@ const questions: Question[] = [
           <img
             src={rectangleImg}
             alt="Rectangle body shape illustration"
-            className="h-[6.5rem] w-[6.5rem] object-contain drop-shadow-[0_8px_16px_rgba(15,23,42,0.35)]"
+            className="h-26 w-26 object-contain drop-shadow-[0_8px_16px_rgba(15,23,42,0.35)]"
           />
         ),
         iconWrapperClass: BODY_SHAPE_IMAGE_WRAPPER_CLASS,
@@ -107,7 +107,7 @@ const questions: Question[] = [
           <img
             src={hourglassImg}
             alt="Hourglass body shape illustration"
-            className="h-[6.5rem] w-[6.5rem] object-contain drop-shadow-[0_8px_16px_rgba(15,23,42,0.35)]"
+            className="h-26 w-26 object-contain drop-shadow-[0_8px_16px_rgba(15,23,42,0.35)]"
           />
         ),
         iconWrapperClass: BODY_SHAPE_IMAGE_WRAPPER_CLASS,
@@ -118,7 +118,7 @@ const questions: Question[] = [
           <img
             src={pearImg}
             alt="Pear body shape illustration"
-            className="h-[6.5rem] w-[6.5rem] object-contain drop-shadow-[0_8px_16px_rgba(15,23,42,0.35)]"
+            className="h-26 w-26 object-contain drop-shadow-[0_8px_16px_rgba(15,23,42,0.35)]"
           />
         ),
         iconWrapperClass: BODY_SHAPE_IMAGE_WRAPPER_CLASS,
@@ -129,7 +129,7 @@ const questions: Question[] = [
           <img
             src={roundImg}
             alt="Round body shape illustration"
-            className="h-[6.5rem] w-[6.5rem] object-contain drop-shadow-[0_8px_16px_rgba(15,23,42,0.35)]"
+            className="h-26 w-26 object-contain drop-shadow-[0_8px_16px_rgba(15,23,42,0.35)]"
           />
         ),
         iconWrapperClass: BODY_SHAPE_IMAGE_WRAPPER_CLASS,
@@ -140,7 +140,7 @@ const questions: Question[] = [
           <img
             src={invertedTriangleImg}
             alt="Inverted triangle body shape illustration"
-            className="h-[6.5rem] w-[6.5rem] object-contain drop-shadow-[0_8px_16px_rgba(15,23,42,0.35)]"
+            className="h-26 w-26 object-contain drop-shadow-[0_8px_16px_rgba(15,23,42,0.35)]"
           />
         ),
         iconWrapperClass: BODY_SHAPE_IMAGE_WRAPPER_CLASS,
@@ -373,7 +373,7 @@ export default function StyleDiscovery() {
 
   return (
     <section className="relative flex min-h-[calc(100vh-4rem)] flex-col overflow-hidden bg-[#04030f] text-white">
-      <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_top,_rgba(168,85,247,0.16),_transparent_55%),_radial-gradient(circle_at_bottom,_rgba(236,72,153,0.22),_transparent_50%)]" />
+      <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_top,rgba(168,85,247,0.16),transparent_55%),radial-gradient(circle_at_bottom,rgba(236,72,153,0.22),transparent_50%)]" />
       <div
         className="pointer-events-none absolute inset-0 opacity-45"
         style={{
@@ -397,9 +397,9 @@ export default function StyleDiscovery() {
           <div className="absolute -top-14 left-2 h-40 w-40 rounded-full bg-pink-500/20 blur-3xl" />
           <div className="absolute -bottom-10 right-0 h-44 w-44 rounded-full bg-violet-500/25 blur-3xl" />
 
-          <div className="relative z-10 w-full rounded-[24px] border border-white/10 bg-[#090b1c]/80 p-6 shadow-[0_28px_80px_rgba(12,10,30,0.45)] backdrop-blur-xl sm:p-7">
+          <div className="relative z-10 w-full rounded-3xl border border-white/10 bg-[#090b1c]/80 p-6 shadow-[0_28px_80px_rgba(12,10,30,0.45)] backdrop-blur-xl sm:p-7">
             <header className="text-center">
-              <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-full bg-gradient-to-br from-pink-500 via-fuchsia-500 to-violet-500 text-white shadow-lg">
+              <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-full bg-linear-to-br from-pink-500 via-fuchsia-500 to-violet-500 text-white shadow-lg">
                 <Sparkles className="h-6 w-6" />
               </div>
               <h1 className="mt-4 text-[1.65rem] font-bold tracking-tight">
@@ -440,7 +440,7 @@ export default function StyleDiscovery() {
                 </div>
                 <div className="mt-1.5 h-1.5 w-full overflow-hidden rounded-full bg-white/10">
                   <div
-                    className="h-full rounded-full bg-gradient-to-r from-pink-500 via-fuchsia-500 to-violet-500 transition-all duration-500"
+                    className="h-full rounded-full bg-linear-to-r from-pink-500 via-fuchsia-500 to-violet-500 transition-all duration-500"
                     style={{
                       width: `${((current + 1) / questions.length) * 100}%`,
                     }}
@@ -505,7 +505,7 @@ export default function StyleDiscovery() {
                   type="button"
                   onClick={handleNext}
                   disabled={!answers[activeQuestion.key] || locked || loading}
-                  className="w-full rounded-2xl bg-gradient-to-r from-pink-500 via-fuchsia-500 to-violet-500 px-6 py-2.5 text-xs font-semibold text-white transition hover:brightness-110 focus:outline-none focus:ring-2 focus:ring-white/40 disabled:cursor-not-allowed disabled:opacity-60 sm:w-auto"
+                  className="w-full rounded-2xl bg-linear-to-r from-pink-500 via-fuchsia-500 to-violet-500 px-6 py-2.5 text-xs font-semibold text-white transition hover:brightness-110 focus:outline-none focus:ring-2 focus:ring-white/40 disabled:cursor-not-allowed disabled:opacity-60 sm:w-auto"
                 >
                   {current < questions.length - 1
                     ? "Next Question"
