@@ -35,6 +35,7 @@ load_dotenv()
 # --- Mongo & R2 setup ---
 MONGO_URI = os.getenv("MONGO_URI")
 ACCOUNT_ID = os.getenv("CF_ACCOUNT_ID")
+CF_API_TOKEN = os.getenv("CF_API_TOKEN")
 ACCESS_KEY_ID = os.getenv("R2_ACCESS_KEY_ID")
 SECRET_ACCESS_KEY = os.getenv("R2_SECRET_ACCESS_KEY")
 BUCKET = os.getenv("R2_BUCKET")
@@ -656,7 +657,7 @@ def delete_image(request):
     result = images_db.delete_one({"name": name})
 
     # 2. Delete from users' wardrobes
-    wardrobe_col.update_many({}, {"$pull": {"images": {"name": name}}})
+    wardrobe_collection.update_many({}, {"$pull": {"images": {"name": name}}})
 
     # 3. Delete from Cloudflare
     headers = {"Authorization": f"Bearer {CF_API_TOKEN}"}
@@ -1365,6 +1366,9 @@ def recommend(request):
     fetch_with_stratified_sampling()
 
     random.shuffle(response_images)
+    delivered_images = response_images[:image_count]
+    delivered_count = len(delivered_images)
+    requested_count = image_count
 
     if base_tags and ENABLE_AI_GENERATION:
         threading.Thread(
@@ -1374,7 +1378,9 @@ def recommend(request):
         ).start()
 
     return JsonResponse({
-        "outfits": response_images[:image_count],
+        "outfits": delivered_images,
+        "requestedCount": requested_count,
+        "deliveredCount": delivered_count,
         "uniqueExhausted": unique_exhausted,
         "weather": weather_info,
         "ai": {

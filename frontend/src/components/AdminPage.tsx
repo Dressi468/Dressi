@@ -662,7 +662,7 @@ export default function AdminPage() {
           </p>
           <Link
             to="/login"
-            className="mt-6 inline-flex items-center justify-center rounded-full bg-gradient-to-r from-pink-500 via-fuchsia-500 to-violet-500 px-6 py-3 text-sm font-semibold text-white transition hover:brightness-110"
+            className="mt-6 inline-flex items-center justify-center rounded-full bg-linear-to-r from-pink-500 via-fuchsia-500 to-violet-500 px-6 py-3 text-sm font-semibold text-white transition hover:brightness-110"
           >
             Go to login
           </Link>
@@ -733,7 +733,7 @@ export default function AdminPage() {
               type="button"
               onClick={handleExport}
               disabled={exporting || !earlyTotal}
-              className="inline-flex items-center justify-center rounded-full bg-gradient-to-r from-pink-500 via-fuchsia-500 to-violet-500 px-6 py-3 text-sm font-semibold text-white transition hover:brightness-110 disabled:cursor-not-allowed disabled:opacity-60"
+              className="inline-flex items-center justify-center rounded-full bg-linear-to-r from-pink-500 via-fuchsia-500 to-violet-500 px-6 py-3 text-sm font-semibold text-white transition hover:brightness-110 disabled:cursor-not-allowed disabled:opacity-60"
             >
               {exporting ? (
                 <Loader2 className="mr-2 h-4 w-4 animate-spin" />
@@ -844,7 +844,7 @@ export default function AdminPage() {
               type="button"
               onClick={handleExportUsers}
               disabled={exportingUsers || !usersTotal}
-              className="inline-flex items-center justify-center rounded-full bg-gradient-to-r from-pink-500 via-fuchsia-500 to-violet-500 px-6 py-3 text-sm font-semibold text-white transition hover:brightness-110 disabled:cursor-not-allowed disabled:opacity-60"
+              className="inline-flex items-center justify-center rounded-full bg-linear-to-r from-pink-500 via-fuchsia-500 to-violet-500 px-6 py-3 text-sm font-semibold text-white transition hover:brightness-110 disabled:cursor-not-allowed disabled:opacity-60"
             >
               {exportingUsers ? (
                 <Loader2 className="mr-2 h-4 w-4 animate-spin" />

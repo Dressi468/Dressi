@@ -136,7 +136,7 @@ export default function SignupPage() {
   };
 
   return (
-    <section className="flex min-h-[calc(100vh-3.5rem)] items-center justify-center bg-gradient-to-br from-amber-200 via-fuchsia-200 to-indigo-200 px-4 text-zinc-900">
+    <section className="flex min-h-[calc(100vh-3.5rem)] items-center justify-center bg-linear-to-br from-amber-200 via-fuchsia-200 to-indigo-200 px-4 text-zinc-900">
       <div className="w-full max-w-lg rounded-3xl border border-white/60 bg-white/80 p-8 shadow-2xl backdrop-blur">
         <header className="mb-8 text-center">
           <h1 className="mt-2 text-3xl font-semibold text-zinc-900">Create your Dressi account</h1>

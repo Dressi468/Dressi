@@ -282,7 +282,7 @@ export default function LoginPage() {
 
   return (
     <section className="relative flex min-h-[calc(100vh-3.5rem)] flex-col overflow-hidden bg-[#04030f] text-white">
-      <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_top,_rgba(168,85,247,0.18),_transparent_55%),_radial-gradient(circle_at_bottom,_rgba(236,72,153,0.2),_transparent_50%)]" />
+      <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_top,rgba(168,85,247,0.18),transparent_55%),radial-gradient(circle_at_bottom,rgba(236,72,153,0.2),transparent_50%)]" />
       <div
         className="pointer-events-none absolute inset-0 opacity-40"
         style={{
@@ -297,7 +297,7 @@ export default function LoginPage() {
           <div className="absolute -bottom-20 right-2 h-56 w-56 rounded-full bg-violet-500/20 blur-3xl" />
 
           <div className="relative z-10 w-full rounded-[28px] border border-white/10 bg-[#090b1c]/80 p-8 shadow-[0_40px_120px_rgba(12,10,30,0.45)] backdrop-blur-xl">
-            <div className="mx-auto flex h-16 w-16 items-center justify-center rounded-full bg-gradient-to-br from-pink-500 via-fuchsia-500 to-violet-500 text-white shadow-lg">
+            <div className="mx-auto flex h-16 w-16 items-center justify-center rounded-full bg-linear-to-br from-pink-500 via-fuchsia-500 to-violet-500 text-white shadow-lg">
               <UserRound className="h-8 w-8" />
             </div>
             <header className="mt-6 text-center">
@@ -366,7 +366,7 @@ export default function LoginPage() {
               <button
                 type="submit"
                 disabled={isSubmitting}
-                className="w-full rounded-2xl bg-gradient-to-r from-pink-500 via-fuchsia-500 to-violet-500 px-4 py-3 text-center text-base font-semibold text-white transition hover:brightness-110 focus:outline-none focus:ring-2 focus:ring-white/40"
+                className="w-full rounded-2xl bg-linear-to-r from-pink-500 via-fuchsia-500 to-violet-500 px-4 py-3 text-center text-base font-semibold text-white transition hover:brightness-110 focus:outline-none focus:ring-2 focus:ring-white/40"
               >
                 {isSubmitting ? "Signing in..." : "Sign In"}
               </button>
@@ -478,7 +478,7 @@ export default function LoginPage() {
                   <button
                     type="submit"
                     disabled={isResetting}
-                    className="w-full rounded-2xl bg-gradient-to-r from-pink-500 via-fuchsia-500 to-violet-500 px-4 py-3 text-center text-sm font-semibold text-white transition hover:brightness-110 focus:outline-none focus:ring-2 focus:ring-white/20 disabled:cursor-not-allowed disabled:opacity-70"
+                    className="w-full rounded-2xl bg-linear-to-r from-pink-500 via-fuchsia-500 to-violet-500 px-4 py-3 text-center text-sm font-semibold text-white transition hover:brightness-110 focus:outline-none focus:ring-2 focus:ring-white/20 disabled:cursor-not-allowed disabled:opacity-70"
                   >
                     {isResetting ? "Resetting..." : "Reset password"}
                   </button>

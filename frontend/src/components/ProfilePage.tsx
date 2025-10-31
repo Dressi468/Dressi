@@ -30,7 +30,7 @@ export default function ProfilePage() {
 
   return (
     <section className="relative min-h-[calc(100vh-3.5rem)] bg-[#050717] text-white">
-      <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_top,_rgba(250,82,160,0.18),_transparent_55%),_radial-gradient(circle_at_bottom,_rgba(124,58,237,0.2),_transparent_50%)]" />
+      <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_top,rgba(250,82,160,0.18),transparent_55%),radial-gradient(circle_at_bottom,rgba(124,58,237,0.2),transparent_50%)]" />
       <div className="relative z-10 mx-auto flex w-full max-w-6xl flex-col gap-8 px-5 py-16 sm:px-8 lg:px-12">
         <header className="flex flex-col items-start gap-4 sm:flex-row sm:items-center sm:justify-between">
           <div>
@@ -53,8 +53,8 @@ export default function ProfilePage() {
 
         <div className="grid gap-6 lg:grid-cols-[340px,1fr]">
           <aside className="flex flex-col gap-6">
-            <div className="rounded-[32px] border border-white/10 bg-white/5 p-6 backdrop-blur-2xl">
-              <div className="relative mx-auto flex h-28 w-28 items-center justify-center rounded-full bg-gradient-to-br from-pink-500 via-fuchsia-500 to-violet-500 text-3xl font-bold text-white shadow-[0_20px_60px_rgba(236,72,153,0.45)]">
+            <div className="rounded-4xl border border-white/10 bg-white/5 p-6 backdrop-blur-2xl">
+              <div className="relative mx-auto flex h-28 w-28 items-center justify-center rounded-full bg-linear-to-br from-pink-500 via-fuchsia-500 to-violet-500 text-3xl font-bold text-white shadow-[0_20px_60px_rgba(236,72,153,0.45)]">
                 {initials || "U"}
                 <div className="absolute bottom-0 right-0 flex h-9 w-9 items-center justify-center rounded-full bg-black/80 text-pink-300">
                   <Sparkles className="h-5 w-5" />
@@ -71,7 +71,7 @@ export default function ProfilePage() {
           </aside>
 
           <div className="flex flex-col gap-6">
-            <section className="rounded-[32px] border border-white/10 bg-black/30 p-6 backdrop-blur-xl">
+            <section className="rounded-4xl border border-white/10 bg-black/30 p-6 backdrop-blur-xl">
               <div className="flex items-center justify-between">
                 <h2 className="text-xl font-semibold text-white">
                   Quick Actions
