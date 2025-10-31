@@ -49,6 +49,7 @@ urlpatterns = [
     path("api/weather_status/", views.weather_status, name="weather_status"),
     path("api/early_access/", views.register_early_access, name="early_access"),
     path("api/early_access/list/", views.list_early_access, name="early_access_list"),
+    path("api/early_access/delete/", views.delete_early_access, name="early_access_delete"),
     path("api/early_access/export/", views.export_early_access, name="early_access_export"),
     path("api/users/export/", views.export_users, name="users_export"),
 ]
