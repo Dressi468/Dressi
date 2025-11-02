@@ -1,10 +1,10 @@
 import { motion } from "framer-motion";
 
-import glowUpImage from "../assets/glow_up_image.png";
-import uploadItemImage from "../assets/upload_item_image.png";
-import digitalWardrobeImage from "../assets/digital_wardrobe_image.png";
-import virtualTryOnImage from "../assets/virtual_try_on.png";
-import styleSmarterImage from "../assets/style_smarter_image.png";
+import glowUpImage from "../assets/glow_up_image.webp";
+import uploadItemImage from "../assets/upload_item_image.webp";
+import digitalWardrobeImage from "../assets/digital_wardrobe_image.webp";
+import virtualTryOnImage from "../assets/virtual_try_on.webp";
+import styleSmarterImage from "../assets/style_smarter_image.webp";
 
 type Step = {
   title: string;
@@ -123,6 +123,7 @@ export default function HowDressiWorks({ onBetaClick }: HowDressiWorksProps) {
                     alt={step.title}
                     className="h-full w-full rounded-[40px] object-contain shadow-[0_70px_140px_-50px_rgba(15,23,42,0.62)]"
                     loading="lazy"
+                    decoding="async"
                   />
                 </div>
               </div>

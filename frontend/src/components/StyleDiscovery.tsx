@@ -12,10 +12,10 @@ import invertedTriangleImg from "../assets/inverted_triangle.png";
 import pearImg from "../assets/pear.png";
 import rectangleImg from "../assets/rectangle.png";
 import roundImg from "../assets/round.png";
-import casualOccImage from "../assets/casual_occ_image.png";
-import dateOccImage from "../assets/date_occ_image.png";
-import sportyOccImage from "../assets/sporty_occ_image.png";
-import workOccImage from "../assets/work_occ_image.png";
+import casualOccImage from "../assets/casual_occ_image.webp";
+import dateOccImage from "../assets/date_occ_image.webp";
+import sportyOccImage from "../assets/sporty_occ_image.webp";
+import workOccImage from "../assets/work_occ_image.webp";
 import { apiUrl } from "../lib/api";
 
 type QuestionOption = {
@@ -47,6 +47,8 @@ const questions: Question[] = [
             src={casualOccImage}
             alt="Casual style outfit inspiration"
             className="h-full w-full object-cover"
+            loading="lazy"
+            decoding="async"
           />
         ),
         iconWrapperClass: STYLE_IMAGE_WRAPPER_CLASS,
@@ -58,6 +60,8 @@ const questions: Question[] = [
             src={sportyOccImage}
             alt="Sporty style outfit inspiration"
             className="h-full w-full object-cover"
+            loading="lazy"
+            decoding="async"
           />
         ),
         iconWrapperClass: STYLE_IMAGE_WRAPPER_CLASS,
@@ -69,6 +73,8 @@ const questions: Question[] = [
             src={workOccImage}
             alt="Formal style outfit inspiration"
             className="h-full w-full object-cover"
+            loading="lazy"
+            decoding="async"
           />
         ),
         iconWrapperClass: STYLE_IMAGE_WRAPPER_CLASS,
@@ -80,6 +86,8 @@ const questions: Question[] = [
             src={dateOccImage}
             alt="Party style outfit inspiration"
             className="h-full w-full object-cover"
+            loading="lazy"
+            decoding="async"
           />
         ),
         iconWrapperClass: STYLE_IMAGE_WRAPPER_CLASS,

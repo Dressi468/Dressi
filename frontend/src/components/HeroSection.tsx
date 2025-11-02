@@ -3,7 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { Sparkles } from "lucide-react";
 import { motion } from "framer-motion";
 import EarlyAccessModal from "./EarlyAccessModal";
-import heroImage from "../assets/hero_image.png";
+import heroImage from "../assets/hero_image.webp";
 
 export default function HeroSection() {
   const [modalOpen, setModalOpen] = useState(false);
@@ -65,6 +65,7 @@ export default function HeroSection() {
               src={heroImage}
               alt="Model in white shirt and black pants"
               className="h-[420px] w-full object-cover object-center sm:h-[520px] lg:h-[600px]"
+              decoding="async"
             />
           </div>
         </motion.div>
