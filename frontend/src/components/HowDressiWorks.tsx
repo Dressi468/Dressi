@@ -90,7 +90,8 @@ export default function HowDressiWorks({ onBetaClick }: HowDressiWorksProps) {
           return (
             <div
               key={step.title}
-              className={`flex flex-col items-start justify-center gap-6 rounded-[28px] border border-white/15 bg-linear-to-br from-white/10 via-white/5 to-transparent p-6 shadow-[0_25px_60px_-40px_rgba(12,12,12,0.8),0_0_40px_-10px_rgba(255,82,168,0.15)] backdrop-blur-3xl transition-all duration-700 hover:shadow-[0_35px_80px_-40px_rgba(12,12,12,0.9),0_0_60px_-10px_rgba(255,82,168,0.25)] hover:border-white/25 hover:bg-linear-to-br hover:from-white/15 hover:via-white/8 hover:to-transparent sm:gap-8 sm:rounded-4xl sm:p-8 lg:min-h-[720px] lg:flex-row lg:items-center lg:justify-center lg:gap-12 lg:p-10 ${isEven ? "" : "lg:flex-row-reverse"}`}
+              className={`flex flex-col items-start justify-center gap-6 rounded-[28px] border border-white/15 bg-white/10 p-6 shadow-[0_25px_60px_-40px_rgba(12,12,12,0.65),0_0_40px_-10px_rgba(255,82,168,0.12)] transition-all duration-500 hover:shadow-[0_35px_80px_-40px_rgba(12,12,12,0.75),0_0_60px_-10px_rgba(255,82,168,0.22)] hover:border-white/20 sm:gap-8 sm:rounded-4xl sm:p-8 lg:min-h-[720px] lg:flex-row lg:items-center lg:justify-center lg:gap-12 lg:p-10 ${isEven ? "" : "lg:flex-row-reverse"}`}
+              style={{ willChange: "transform" }}
             >
               <motion.div
                 className="flex w-full max-w-xl flex-1 flex-col items-start text-left sm:items-center sm:text-center lg:max-w-[440px] lg:items-start lg:text-left"
@@ -99,6 +100,7 @@ export default function HowDressiWorks({ onBetaClick }: HowDressiWorksProps) {
                 whileInView="visible"
                 viewport={{ once: true, amount: 0.6 }}
                 transition={{ duration: 0.6, delay: 0.1, ease: "easeOut" }}
+                style={{ willChange: "opacity, transform" }}
               >
                 <h3 className="mt-2 text-xl font-bold text-transparent bg-linear-to-r from-pink-200 via-white to-purple-300 bg-clip-text tracking-tight leading-tight sm:text-3xl lg:text-4xl">
                   {step.title}
@@ -113,17 +115,16 @@ export default function HowDressiWorks({ onBetaClick }: HowDressiWorksProps) {
                 </div>
               </motion.div>
 
-              <div
-                className="flex w-full flex-1 items-center justify-center"
-              >
+              <div className="flex w-full flex-1 items-center justify-center">
                 <div className="relative h-72 w-full max-w-2xl sm:h-[420px] md:h-[520px] lg:h-[640px] lg:max-w-[880px]">
-                  <div className="pointer-events-none absolute inset-0 -z-10 rounded-[40px] bg-linear-to-br from-white/25 via-transparent to-transparent blur-3xl" />
+                  <div className="pointer-events-none absolute inset-0 -z-10 rounded-[40px] bg-white/20 blur-2xl" />
                   <img
                     src={step.image}
                     alt={step.title}
                     className="h-full w-full rounded-[40px] object-contain shadow-[0_70px_140px_-50px_rgba(15,23,42,0.62)]"
                     loading="lazy"
                     decoding="async"
+                    style={{ willChange: "transform" }}
                   />
                 </div>
               </div>

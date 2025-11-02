@@ -16,6 +16,7 @@ export default function HeroSection() {
       viewport={{ once: true, amount: 0.3 }}
       transition={{ duration: 0.7, ease: "easeOut" }}
       className="relative isolate overflow-hidden"
+      style={{ willChange: "transform" }}
     >
       <EarlyAccessModal open={modalOpen} onClose={() => setModalOpen(false)} />
       <div className="pointer-events-none absolute inset-0 -z-10 bg-[radial-gradient(1200px_600px_at_left_center,rgba(36,50,70,0.85),transparent_65%)]" />
@@ -59,6 +60,7 @@ export default function HeroSection() {
           viewport={{ once: true, amount: 0.3 }}
           transition={{ duration: 0.8, ease: "easeOut" }}
           className="relative flex justify-center"
+          style={{ willChange: "opacity, transform" }}
         >
           <div className="overflow-hidden rounded-4xl border-4 border-white/10 shadow-2xl">
             <img
