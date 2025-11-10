@@ -1,17 +1,17 @@
 import { motion } from "framer-motion";
 
-import aiSalonLogo from "../assets/ai_salon_logo.png";
-import dailyTelegraphLogo from "../assets/daily_telegraph_logo.jpeg";
-import genieFriendLogo from "../assets/genie_friend_logo.png";
-import launchPadLogo from "../assets/LaunchPad_W_back.png";
-import parramattaLogo from "../assets/parramatta_logo.jpeg";
-import pitchClubLogo from "../assets/pitch_club_logo.png";
-import societyLogo from "../assets/society_log.png";
-import styleCircleLogo from "../assets/style_circle_logo.png";
-import torrentUniLogo from "../assets/torrent_uni_logo.jpeg";
-import unswLogo from "../assets/unsw_logo.png";
-import utsLogo from "../assets/uts_logo.jpeg";
-import wsuLogo from "../assets/wsu_logo.png";
+import aiSalonLogo from "../assets/ai_salon_logo.webp";
+import dailyTelegraphLogo from "../assets/daily_telegraph.webp";
+import genieFriendLogo from "../assets/genie_friend_logo.webp";
+import launchPadLogo from "../assets/LaunchPad_W_back.webp";
+import parramattaLogo from "../assets/parramatta_logo.webp";
+import pitchClubLogo from "../assets/pitch_club_logo.webp";
+import societyLogo from "../assets/society_log.webp";
+import styleCircleLogo from "../assets/style_circle_logo.webp";
+import torrentUniLogo from "../assets/torrent_uni_logo.webp";
+import unswLogo from "../assets/unsw_logo.webp";
+import utsLogo from "../assets/uts_logo.webp";
+import wsuLogo from "../assets/wsu_logo.webp";
 
 type LogoItem = {
   src: string;
@@ -35,8 +35,12 @@ const logos: LogoItem[] = [
 ];
 
 const duplicatedLogos = [...logos, ...logos];
+const CARD_WIDTH = 230;
+const CARD_GAP = 40; 
 
 export default function LogoShowcase() {
+  const trackWidth = duplicatedLogos.length * (CARD_WIDTH + CARD_GAP);
+
   return (
     <motion.section
       initial={{ opacity: 0, y: 30 }}
@@ -57,16 +61,18 @@ export default function LogoShowcase() {
           </div>
         </div>
         <div className="relative overflow-hidden">
-          <div className="logo-marquee flex gap-10">
+          <div className="logo-marquee flex gap-10" style={{ width: `${trackWidth}px` }}>
             {duplicatedLogos.map((logo, index) => (
               <div
                 key={`${logo.alt}-${index}`}
-                className="flex h-24 min-w-[230px] items-center justify-center rounded-3xl bg-white px-6 py-4 text-black shadow-[0_15px_35px_rgba(0,0,0,0.35)] ring-1 ring-white/60"
+                className="flex h-24 min-w-[230px] flex-none items-center justify-center rounded-3xl bg-white px-6 py-4 text-black shadow-[0_15px_35px_rgba(0,0,0,0.35)] ring-1 ring-white/60"
                 aria-hidden={index >= logos.length ? true : undefined}
               >
                 <img
                   src={logo.src}
                   alt={logo.alt}
+                  loading="lazy"
+                  decoding="async"
                   className={`${logo.imageClass ?? "max-h-20"} w-auto object-contain transition hover:opacity-100`}
                 />
               </div>
