@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { BrowserRouter, Route, Routes } from "react-router-dom";
 import EarlyAccessModal from "./components/EarlyAccessModal";
 import HeroSection from "./components/HeroSection";
+import LogoShowcase from "./components/LogoShowcase";
 import HowDressiWorks from "./components/HowDressiWorks";
 import InstantOutfitSection from "./components/InstantOutfitSection";
 import CuratedPage from "./components/CuratedPage";
@@ -36,6 +37,7 @@ export default function App() {
               element={
                 <>
                   <HeroSection />
+                  <LogoShowcase />
                   <HowDressiWorks onBetaClick={() => setShowModal(true)} />
                   <InstantOutfitSection setLoading={setInstantLoading} />
                   <CallToActionSection />

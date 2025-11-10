@@ -68,3 +68,28 @@
     transform: translateX(100%);
   }
 }
+
+.logo-marquee {
+  width: max-content;
+  animation: logo-marquee 28s linear infinite;
+}
+
+.logo-marquee:hover {
+  animation-play-state: paused;
+}
+
+@keyframes logo-marquee {
+  0% {
+    transform: translateX(0);
+  }
+  100% {
+    transform: translateX(-50%);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .logo-marquee {
+    animation: none;
+    transform: translateX(0);
+  }
+}
