@@ -50,7 +50,6 @@ export default function LogoShowcase() {
   const x = useMotionValue(0);
 
   useEffect(() => {
-    // Preload every logo once so they all render immediately when the marquee appears
     const preloaded = logos.map((logo) => {
       const img = new Image();
       img.src = logo.src;
@@ -75,7 +74,7 @@ export default function LogoShowcase() {
         const styles = window.getComputedStyle(node);
         const gapValue =
           parseFloat(styles.columnGap || styles.gap || "0") || 0;
-        const cycleWidth = singleLoopWidth + gapValue / 2; // account for missing last gap in measurement
+        const cycleWidth = singleLoopWidth + gapValue / 2;
         setLoopWidth(Math.max(cycleWidth, MIN_LOOP_WIDTH));
       }
     };
