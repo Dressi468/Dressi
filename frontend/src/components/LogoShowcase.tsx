@@ -39,7 +39,7 @@ const duplicatedLogos = [...logos, ...logos];
 const SCROLL_DURATION_SECONDS = 28;
 const MIN_CARD_WIDTH = 230;
 const CARD_GAP = 40;
-const MIN_LOOP_WIDTH = logos.length * MIN_CARD_WIDTH + (logos.length - 1) * CARD_GAP;
+const MIN_LOOP_WIDTH = logos.length * (MIN_CARD_WIDTH + CARD_GAP);
 
 export default function LogoShowcase() {
   const trackRef = useRef<HTMLDivElement>(null);
@@ -72,7 +72,11 @@ export default function LogoShowcase() {
     const calculateLoopDistance = () => {
       const singleLoopWidth = node.scrollWidth / 2;
       if (singleLoopWidth > 0) {
-        setLoopWidth(Math.max(singleLoopWidth, MIN_LOOP_WIDTH));
+        const styles = window.getComputedStyle(node);
+        const gapValue =
+          parseFloat(styles.columnGap || styles.gap || "0") || 0;
+        const cycleWidth = singleLoopWidth + gapValue / 2; // account for missing last gap in measurement
+        setLoopWidth(Math.max(cycleWidth, MIN_LOOP_WIDTH));
       }
     };
 
