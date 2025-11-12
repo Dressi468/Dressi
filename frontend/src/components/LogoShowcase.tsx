@@ -49,6 +49,21 @@ export default function LogoShowcase() {
   const progressRef = useRef(0);
   const x = useMotionValue(0);
 
+  useEffect(() => {
+    // Preload every logo once so they all render immediately when the marquee appears
+    const preloaded = logos.map((logo) => {
+      const img = new Image();
+      img.src = logo.src;
+      return img;
+    });
+
+    return () => {
+      preloaded.forEach((img) => {
+        img.onload = null;
+      });
+    };
+  }, []);
+
   useLayoutEffect(() => {
     if (typeof window === "undefined") return;
     const node = trackRef.current;
@@ -145,7 +160,7 @@ export default function LogoShowcase() {
                 <img
                   src={logo.src}
                   alt={logo.alt}
-                  loading="lazy"
+                  loading="eager"
                   decoding="async"
                   className={`${logo.imageClass ?? "max-h-20"} w-auto object-contain transition hover:opacity-100`}
                 />
