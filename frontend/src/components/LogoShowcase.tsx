@@ -37,6 +37,9 @@ const logos: LogoItem[] = [
 
 const duplicatedLogos = [...logos, ...logos];
 const SCROLL_DURATION_SECONDS = 28;
+const MIN_CARD_WIDTH = 230;
+const CARD_GAP = 40;
+const MIN_LOOP_WIDTH = logos.length * MIN_CARD_WIDTH + (logos.length - 1) * CARD_GAP;
 
 export default function LogoShowcase() {
   const trackRef = useRef<HTMLDivElement>(null);
@@ -54,7 +57,7 @@ export default function LogoShowcase() {
     const calculateLoopDistance = () => {
       const singleLoopWidth = node.scrollWidth / 2;
       if (singleLoopWidth > 0) {
-        setLoopWidth(singleLoopWidth);
+        setLoopWidth(Math.max(singleLoopWidth, MIN_LOOP_WIDTH));
       }
     };
 
@@ -101,12 +104,9 @@ export default function LogoShowcase() {
     const distancePerSecond = loopWidth / SCROLL_DURATION_SECONDS;
     const deltaDistance = distancePerSecond * (delta / 1000);
 
-    progressRef.current += deltaDistance;
-    if (progressRef.current >= loopWidth) {
-      progressRef.current -= loopWidth;
-    }
-
-    x.set(-progressRef.current);
+    const nextProgress = (progressRef.current + deltaDistance) % loopWidth;
+    progressRef.current = nextProgress;
+    x.set(-nextProgress);
   });
 
   return (
