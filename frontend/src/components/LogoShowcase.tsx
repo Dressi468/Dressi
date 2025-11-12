@@ -1,4 +1,5 @@
-import { motion } from "framer-motion";
+import { useEffect, useLayoutEffect, useRef, useState } from "react";
+import { motion, useAnimationFrame, useMotionValue } from "framer-motion";
 
 import aiSalonLogo from "../assets/ai_salon_logo.webp";
 import dailyTelegraphLogo from "../assets/daily_telegraph.webp";
@@ -35,11 +36,78 @@ const logos: LogoItem[] = [
 ];
 
 const duplicatedLogos = [...logos, ...logos];
-const CARD_WIDTH = 230;
-const CARD_GAP = 40; 
+const SCROLL_DURATION_SECONDS = 28;
 
 export default function LogoShowcase() {
-  const trackWidth = duplicatedLogos.length * (CARD_WIDTH + CARD_GAP);
+  const trackRef = useRef<HTMLDivElement>(null);
+  const [loopWidth, setLoopWidth] = useState<number>(0);
+  const [motionAllowed, setMotionAllowed] = useState<boolean>(false);
+  const [isHovered, setIsHovered] = useState<boolean>(false);
+  const progressRef = useRef(0);
+  const x = useMotionValue(0);
+
+  useLayoutEffect(() => {
+    if (typeof window === "undefined") return;
+    const node = trackRef.current;
+    if (!node) return;
+
+    const calculateLoopDistance = () => {
+      const singleLoopWidth = node.scrollWidth / 2;
+      if (singleLoopWidth > 0) {
+        setLoopWidth(singleLoopWidth);
+      }
+    };
+
+    calculateLoopDistance();
+
+    if (typeof ResizeObserver !== "undefined") {
+      const resizeObserver = new ResizeObserver(calculateLoopDistance);
+      resizeObserver.observe(node);
+      return () => resizeObserver.disconnect();
+    }
+
+    window.addEventListener("resize", calculateLoopDistance);
+    return () => window.removeEventListener("resize", calculateLoopDistance);
+  }, []);
+
+  useEffect(() => {
+    progressRef.current = 0;
+    x.set(0);
+  }, [loopWidth, x]);
+
+  useEffect(() => {
+    if (typeof window === "undefined") return;
+    const mediaQuery = window.matchMedia("(prefers-reduced-motion: reduce)");
+    const handleChange = () => {
+      setMotionAllowed(!mediaQuery.matches);
+      if (mediaQuery.matches) {
+        x.set(0);
+      }
+    };
+
+    handleChange();
+    if (typeof mediaQuery.addEventListener === "function") {
+      mediaQuery.addEventListener("change", handleChange);
+      return () => mediaQuery.removeEventListener("change", handleChange);
+    }
+
+    mediaQuery.addListener(handleChange);
+    return () => mediaQuery.removeListener(handleChange);
+  }, [x]);
+
+  useAnimationFrame((_, delta) => {
+    if (!motionAllowed || loopWidth === 0 || isHovered) return;
+
+    const distancePerSecond = loopWidth / SCROLL_DURATION_SECONDS;
+    const deltaDistance = distancePerSecond * (delta / 1000);
+
+    progressRef.current += deltaDistance;
+    if (progressRef.current >= loopWidth) {
+      progressRef.current -= loopWidth;
+    }
+
+    x.set(-progressRef.current);
+  });
 
   return (
     <motion.section
@@ -61,7 +129,13 @@ export default function LogoShowcase() {
           </div>
         </div>
         <div className="relative overflow-hidden">
-          <div className="logo-marquee flex gap-10" style={{ width: `${trackWidth}px` }}>
+          <motion.div
+            ref={trackRef}
+            className="logo-marquee flex gap-10"
+            style={{ x }}
+            onPointerEnter={() => setIsHovered(true)}
+            onPointerLeave={() => setIsHovered(false)}
+          >
             {duplicatedLogos.map((logo, index) => (
               <div
                 key={`${logo.alt}-${index}`}
@@ -77,7 +151,7 @@ export default function LogoShowcase() {
                 />
               </div>
             ))}
-          </div>
+          </motion.div>
         </div>
       </div>
     </motion.section>
